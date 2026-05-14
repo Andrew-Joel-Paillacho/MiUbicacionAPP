@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mi Ubicación GPS (Standalone)</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card *ngIf="latitude() !== null && longitude() !== null">
+    <ion-card-header>
+      <ion-card-title>Coordenadas actuales</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Latitud:</strong> {{ latitude() }}</p>
+      <p><strong>Longitud:</strong> {{ longitude() }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <p *ngIf="errorMsg()">{{ errorMsg() }}</p>
+
+  <ion-button expand="block" (click)="obtenerUbicacionActual()">
+    Obtener ubicación actual
+  </ion-button>
+
+  <ion-button expand="block" (click)="iniciarSeguimiento()" [disabled]="watchId !== null">
+    Iniciar seguimiento
+  </ion-button>
+
+  <ion-button expand="block" color="medium" (click)="detenerSeguimiento()" [disabled]="watchId === null">
+    Detener seguimiento
+  </ion-button>
+</ion-content>

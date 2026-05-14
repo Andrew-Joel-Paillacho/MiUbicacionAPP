@@ -1,1 +1,1 @@
-# MiUbicacionAPP
+Implementar un login utilizando Supabase

@@ -1,0 +1,22 @@
+
+.pantalla-negra {
+  --background: #000000; /* fondo negro */
+}
+
+.centro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.centro h1 {
+  color: #40e0d0;
+  font-size: 3rem;
+  font-weight: bold;
+  border: 5px solid #40e0d0;
+  background-color: white;
+  width: 80%;
+  padding: 20px;
+  text-align: center;
+}
