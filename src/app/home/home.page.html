@@ -35,6 +35,14 @@
       <p><strong>Latitud:</strong> {{ latitude() }}</p>
       <p><strong>Longitud:</strong> {{ longitude() }}</p>
       <p><small>Actualizado: {{ fechaActual() | date:'HH:mm:ss' }}</small></p>
+      
+      <!-- Mini mapa estático de Google (opcional) -->
+      <div style="margin-top: 10px; text-align: center;">
+        <img 
+          [src]="'https://maps.googleapis.com/maps/api/staticmap?center=' + latitude() + ',' + longitude() + '&zoom=15&size=300x150&markers=color:red%7C' + latitude() + ',' + longitude() + '&key=TU_API_KEY_AQUI'"
+          style="width: 100%; border-radius: 8px;"
+          *ngIf="false">
+      </div>
     </ion-card-content>
   </ion-card>
 
@@ -58,7 +66,12 @@
     Detener seguimiento
   </ion-button>
 
-  <!-- Botón guardar ubicación (AHORA FUNCIONAL) -->
+  <!-- Botones de Google Maps -->
+  <ion-button expand="block" color="tertiary" (click)="abrirEnGoogleMaps()">
+    Ver en Google Maps
+  </ion-button>
+
+  <!-- Botón guardar ubicación -->
   <ion-button expand="block" color="success" (click)="guardarUbicacion()">
     Guardar ubicación en Supabase
   </ion-button>

@@ -19,6 +19,7 @@ import { NgIf, DatePipe, SlicePipe } from '@angular/common';
 import { LocationService } from '../services/location';
 import { SupabaseService } from '../services/supabase.service';
 import { Router } from '@angular/router';
+import { Browser } from '@capacitor/browser';
 
 @Component({
   selector: 'app-home',
@@ -70,7 +71,6 @@ export class HomePage implements OnInit, OnDestroy {
     await this.obtenerUbicacionActual();
     await this.iniciarSeguimiento();
     
-    // Actualizar la fecha cada segundo
     setInterval(() => {
       this.fechaActual.set(new Date());
     }, 1000);
@@ -131,6 +131,69 @@ export class HomePage implements OnInit, OnDestroy {
     if (this.watchId) {
       await this.loc.clearWatch(this.watchId);
       this.watchId = null;
+    }
+  }
+
+  // Método para abrir en Google Maps
+  abrirEnGoogleMaps() {
+    if (this.latitude() === null || this.longitude() === null) {
+      this.mostrarMensaje('No hay ubicación disponible para abrir en Maps', 'warning');
+      return;
+    }
+
+    const lat = this.latitude();
+    const lng = this.longitude();
+    
+    // Detectar la plataforma
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    let url: string;
+    
+    if (isIOS) {
+      url = `comgooglemaps://?q=${lat},${lng}&center=${lat},${lng}&zoom=15`;
+      setTimeout(() => {
+        if (!document.hidden) {
+          window.open(`maps://?q=${lat},${lng}`, '_blank');
+        }
+      }, 250);
+    } else if (isAndroid) {
+      url = `google.navigation:q=${lat},${lng}`;
+    } else {
+      url = `https://www.google.com/maps?q=${lat},${lng}&z=15`;
+    }
+    
+    window.open(url, '_blank');
+    this.mostrarMensaje('Abriendo Google Maps...', 'medium');
+  }
+
+  // Método para abrir con instrucciones de navegación
+  obtenerRuta() {
+    if (this.latitude() === null || this.longitude() === null) {
+      this.mostrarMensaje('No hay ubicación disponible', 'warning');
+      return;
+    }
+
+    const lat = this.latitude();
+    const lng = this.longitude();
+    
+    // Verificar si el navegador soporta geolocalización para obtener la ubicación actual del usuario
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const origenLat = position.coords.latitude;
+          const origenLng = position.coords.longitude;
+          const url = `https://www.google.com/maps/dir/${origenLat},${origenLng}/${lat},${lng}`;
+          window.open(url, '_blank');
+          this.mostrarMensaje('Abriendo ruta en Google Maps...', 'medium');
+        },
+        (error) => {
+          // Si no se puede obtener la ubicación actual, abrir solo el destino
+          this.abrirEnGoogleMaps();
+        }
+      );
+    } else {
+      this.abrirEnGoogleMaps();
     }
   }
 
@@ -197,4 +260,5 @@ export class HomePage implements OnInit, OnDestroy {
   ngOnDestroy() {
     if (this.watchId) this.loc.clearWatch(this.watchId);
   }
+
 }
