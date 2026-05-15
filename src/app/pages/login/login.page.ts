@@ -50,7 +50,7 @@ export class LoginPage {
   ) {}
 
   async login() {
-    const { error } = await this.supabaseService.login(
+    const { data, error } = await this.supabaseService.login(
       this.email,
       this.password
     );
@@ -58,6 +58,16 @@ export class LoginPage {
     if (error) {
       this.mensaje = error.message;
       return;
+    }
+
+    // Guardar datos del usuario en el estado o localStorage si es necesario
+    if (data?.user) {
+      // Puedes guardar el usuario en un servicio o localStorage
+      localStorage.setItem('user', JSON.stringify({
+        email: data.user.email,
+        id: data.user.id,
+        created_at: data.user.created_at
+      }));
     }
 
     this.router.navigateByUrl('/home');
@@ -74,6 +84,6 @@ export class LoginPage {
       return;
     }
 
-    this.mensaje = 'Usuario registrado';
+    this.mensaje = 'Usuario registrado, revisa tu correo para la confirmacion.';
   }
 }

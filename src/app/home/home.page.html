@@ -1,10 +1,32 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Mi Ubicación GPS (Standalone)</ion-title>
+    <ion-title>Mi Ubicación GPS</ion-title>
+    <ion-buttons slot="end">
+      <ion-chip>
+        <ion-avatar>
+          <div style="width: 32px; height: 32px; background: var(--ion-color-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+            👤
+          </div>
+        </ion-avatar>
+        <ion-label>{{ userName() || 'Usuario' }}</ion-label>
+      </ion-chip>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Info del usuario -->
+  <ion-card *ngIf="userEmail()">
+    <ion-card-header>
+      <ion-card-title>Bienvenido</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p><strong>Email:</strong> {{ userEmail() }}</p>
+      <p><strong>ID:</strong> {{ (userId() | slice:0:8) }}...</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Coordenadas actuales -->
   <ion-card *ngIf="latitude() !== null && longitude() !== null">
     <ion-card-header>
       <ion-card-title>Coordenadas actuales</ion-card-title>
@@ -12,11 +34,18 @@
     <ion-card-content>
       <p><strong>Latitud:</strong> {{ latitude() }}</p>
       <p><strong>Longitud:</strong> {{ longitude() }}</p>
+      <p><small>Actualizado: {{ fechaActual() | date:'HH:mm:ss' }}</small></p>
     </ion-card-content>
   </ion-card>
 
-  <p *ngIf="errorMsg()">{{ errorMsg() }}</p>
+  <!-- Mensaje de error -->
+  <ion-card *ngIf="errorMsg()" color="danger">
+    <ion-card-content>
+      {{ errorMsg() }}
+    </ion-card-content>
+  </ion-card>
 
+  <!-- Botones de acciones -->
   <ion-button expand="block" (click)="obtenerUbicacionActual()">
     Obtener ubicación actual
   </ion-button>
@@ -28,4 +57,23 @@
   <ion-button expand="block" color="medium" (click)="detenerSeguimiento()" [disabled]="watchId === null">
     Detener seguimiento
   </ion-button>
+
+  <!-- Botón guardar ubicación (AHORA FUNCIONAL) -->
+  <ion-button expand="block" color="success" (click)="guardarUbicacion()">
+    Guardar ubicación en Supabase
+  </ion-button>
+
+  <!-- Botón cerrar sesión -->
+  <ion-button expand="block" color="danger" fill="outline" (click)="logout()">
+    Cerrar sesión
+  </ion-button>
 </ion-content>
+
+<!-- Toast para mostrar mensajes -->
+<ion-toast
+  [isOpen]="showToast()"
+  [message]="toastMessage()"
+  [color]="toastColor()"
+  [duration]="3000"
+  position="bottom">
+</ion-toast>
